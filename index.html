@@ -7,7 +7,7 @@
     <title>Demo Àudio i Vídeo</title>
 </head>
 <body>
-    <audio controls autoplay loop>
+    <audio controls>
         <source src="media/techbg.mp3" type="audio/mp3">
         Ho sento, el teu navegador no suporta àudio d'HTML5.
     </audio>
@@ -16,5 +16,52 @@
         by <a rel="nofollow" class="external text" href="https://freemusicarchive.org/music/timtaj/contact">Taj Tim</a> 
         is licensed under <a rel="nofollow" class="external text" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">Attribution-NonCommercial-NoDerivatives 4.0 International License</a>
     </div>
+    <hr>
+    <!-- L'etiqueta <video> també accepta varies propietats: height, width, autoplay... 
+         poster permet establir un fons per quan no el vídeo no s'està reproduint.
+    -->
+    <video id="video" controls>
+        <!-- podem tenir diversos formats. El repoductor escollirà el primer que reconegui. -->
+        <source src="media/metro.mp4" type="video/mp4">
+        <source src="media/metro.ogg" type="video/ogg">
+        <!-- afegim els subtítols en format WebVTT (Web Video Text Tracks), un per cada idioma
+             El reproductor ens deixa escollir idioma en el seu menú per defecte.
+        -->
+        <!-- captions: normalment per persones amb discapacitat auditiva, amb descripcions diverses
+             subtitles: per traducció dels diàlegs.
+        -->
+        <track src="media/captions/metro-cat.vtt" label="Català" kind="captions" srclang="es-cat" default>
+        <track src="media/captions/metro-es.vtt" label="Espanyol" kind="captions" srclang="es">
+        El teu navegador no suporta l'element HTML vídeo.
+    </video>
+    <button onclick="capturarFotograma()">Capturar Fotograma</button>
+    <canvas id="canva" width="640" height="360" style="border:1px solid #000;"></canvas>
+    <script>
+        // Función para capturar el fotograma actual del vídeo y mostrarlo en el canvas en blanco y negro
+        function capturarFotograma() {
+            // Obtener el elemento de vídeo y el canvas
+            let video = document.getElementById('video');
+            let canvas = document.getElementById('canva');
+            let ctx = canvas.getContext('2d');
+
+            // Dibujar el fotograma actual en el canvas
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Obtener los datos de la imagen en el canvas
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            // Convertir la imagen a blanco y negro
+            for (let i = 0; i < data.length; i += 4) {
+                let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                data[i] = avg;      // Red
+                data[i + 1] = avg;  // Green
+                data[i + 2] = avg;  // Blue
+            }
+
+            // Actualizar el canvas con la imagen en blanco y negro
+            ctx.putImageData(imageData, 0, 0);
+        }
+    </script>
 </body>
 </html>
